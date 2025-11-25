@@ -8,8 +8,8 @@ const scoreRedEl = document.getElementById("scoreRed");
 const scoreBlueEl = document.getElementById("scoreBlue");
 
 let ball = { x: W/4, y: H/2, vx: 0, vy: 0, r: 10, color: "#fff" };
-let red = { x: W/4, y: H/2, r: 20, color: "red" };
-let blue = { x: 3*W/4, y: H/2, r: 20, color: "blue" };
+let red = { x: W/4, y: H/2, r: 20, color: "red", speed: 5 };
+let blue = { x: 3*W/4, y: H/2, r: 20, color: "blue", speed: 4 };
 
 const keys = new Set();
 window.addEventListener("keydown", e => keys.add(e.code));
@@ -63,26 +63,37 @@ function update() {
   if (ball.x > W) {
     scoreRed++;
     scoreRedEl.textContent = scoreRed;
-    resetBall(false);
+    resetBall(true); // sempre reinicia com vermelho
   }
 
-  // chute (mesma tecla para ambos)
+  // movimento jogador vermelho (WASD)
+  if (keys.has("KeyW") && red.y - red.r > 0) red.y -= red.speed;
+  if (keys.has("KeyS") && red.y + red.r < H) red.y += red.speed;
+  if (keys.has("KeyA") && red.x - red.r > 0) red.x -= red.speed;
+  if (keys.has("KeyD") && red.x + red.r < W/2 - 10) red.x += red.speed; // limite até a rede
+
+  // chute vermelho
   if (keys.has("Space")) {
-    // chute vermelho
-    let dxR = ball.x - red.x, dyR = ball.y - red.y;
-    let distR = Math.hypot(dxR,dyR);
-    if (distR < red.r + ball.r + 10) {
+    const dx = ball.x - red.x, dy = ball.y - red.y;
+    const dist = Math.hypot(dx,dy);
+    if (dist < red.r + ball.r + 10) {
       ball.vx = 6; // manda pro azul
       ball.vy = (Math.random()-0.5)*6;
     }
+  }
 
-    // chute azul
-    let dxB = ball.x - blue.x, dyB = ball.y - blue.y;
-    let distB = Math.hypot(dxB,dyB);
-    if (distB < blue.r + ball.r + 10) {
-      ball.vx = -6; // manda pro vermelho
-      ball.vy = (Math.random()-0.5)*6;
-    }
+  // BOT azul: segue a bola
+  if (ball.x > W/2) {
+    if (ball.y < blue.y && blue.y - blue.r > 0) blue.y -= blue.speed;
+    if (ball.y > blue.y && blue.y + blue.r < H) blue.y += blue.speed;
+  }
+
+  // chute azul automático
+  const dxB = ball.x - blue.x, dyB = ball.y - blue.y;
+  const distB = Math.hypot(dxB,dyB);
+  if (distB < blue.r + ball.r + 10 && ball.x > W/2) {
+    ball.vx = -6; // manda pro vermelho
+    ball.vy = (Math.random()-0.5)*6;
   }
 }
 
