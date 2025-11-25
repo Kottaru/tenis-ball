@@ -2,7 +2,6 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 const W = canvas.width, H = canvas.height;
-const netHeight = 20;
 
 let scoreRed = 0, scoreBlue = 0;
 const scoreRedEl = document.getElementById("scoreRed");
@@ -67,22 +66,21 @@ function update() {
     resetBall(false);
   }
 
-  // chute vermelho
+  // chute (mesma tecla para ambos)
   if (keys.has("Space")) {
-    const dx = ball.x - red.x, dy = ball.y - red.y;
-    const dist = Math.hypot(dx,dy);
-    if (dist < red.r + ball.r + 10) {
-      ball.vx = 6; // manda pro outro lado
+    // chute vermelho
+    let dxR = ball.x - red.x, dyR = ball.y - red.y;
+    let distR = Math.hypot(dxR,dyR);
+    if (distR < red.r + ball.r + 10) {
+      ball.vx = 6; // manda pro azul
       ball.vy = (Math.random()-0.5)*6;
     }
-  }
 
-  // chute azul
-  if (keys.has("ShiftRight")) {
-    const dx = ball.x - blue.x, dy = ball.y - blue.y;
-    const dist = Math.hypot(dx,dy);
-    if (dist < blue.r + ball.r + 10) {
-      ball.vx = -6;
+    // chute azul
+    let dxB = ball.x - blue.x, dyB = ball.y - blue.y;
+    let distB = Math.hypot(dxB,dyB);
+    if (distB < blue.r + ball.r + 10) {
+      ball.vx = -6; // manda pro vermelho
       ball.vy = (Math.random()-0.5)*6;
     }
   }
